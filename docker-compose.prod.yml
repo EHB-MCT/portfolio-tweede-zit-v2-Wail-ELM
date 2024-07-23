@@ -1,21 +1,24 @@
 version: '3.8'
 services:
-  app:
+  app_prod:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:3000"
+      - "80:3000"  
     environment:
-      - NODE_ENV=production
-  db:
+      NODE_ENV: production
+    depends_on:
+      - db_prod
+  db_prod:
     image: postgres:13
     environment:
-      POSTGRES_DB: ${PROD_DB}
-      POSTGRES_USER: ${PROD_USER}
-      POSTGRES_PASSWORD: ${PROD_PASSWORD}
-      POSTGRES_HOST_AUTH_METHOD: ${PROD_HOST_AUTH_METHOD}
+      POSTGRES_DB: ${PROD_DB_NAME} 
+      POSTGRES_USER: ${PROD_DB_USER}
+      POSTGRES_PASSWORD: ${PROD_DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: ${PROD_DB_HOST_AUTH_METHOD}
     volumes:
       - db_data_prod:/var/lib/postgresql/data
+
 volumes:
   db_data_prod:
