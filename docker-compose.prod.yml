@@ -3,21 +3,19 @@ services:
   app:
     build:
       context: .
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     ports:
       - "80:3000"
     environment:
-      NODE_ENV: production
-    depends_on:
-      - db
+      - NODE_ENV=production
   db:
     image: postgres:13
     environment:
-      POSTGRES_DB: forum_prod
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${PROD_DB}
+      POSTGRES_USER: ${PROD_USER}
+      POSTGRES_PASSWORD: ${PROD_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: ${PROD_HOST_AUTH_METHOD}
     volumes:
       - db_data_prod:/var/lib/postgresql/data
-
 volumes:
   db_data_prod:
