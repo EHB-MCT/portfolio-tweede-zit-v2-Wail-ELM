@@ -4,8 +4,8 @@ module.exports = {
   development: {
     client: "pg",
     connection: {
-      host: '127.0.0.1', // Use IPv4 localhost address
-      port: 5432,        // Default PostgreSQL port
+      host: '127.0.0.1', 
+      port: 5432,       
       database: process.env.DEV_DB_NAME,
       user: process.env.DEV_DB_USER,
       password: process.env.DEV_DB_PASSWORD,
