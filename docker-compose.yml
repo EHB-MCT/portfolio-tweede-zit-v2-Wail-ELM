@@ -15,6 +15,7 @@ services:
       DB_USER: ${DEV_DB_USER}
       DB_PASSWORD: ${DEV_DB_PASSWORD}
       DB_HOST_AUTH_METHOD: ${DEV_DB_HOST_AUTH_METHOD}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
   db_dev:
     image: postgres:13
     ports:

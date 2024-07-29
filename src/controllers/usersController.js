@@ -9,16 +9,11 @@ exports.findAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
-  const { name, email, password, role } = req.body;
+exports.findById = async (req, res) => {
   try {
-    const [id] = await knex('users').insert({
-      name,
-      email,
-      password, 
-      role
-    }).returning('id');
-    res.status(201).json({ id: id, message: 'User created successfully' });
+    const user = await knex('users').where({ id: req.params.id }).first();
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
