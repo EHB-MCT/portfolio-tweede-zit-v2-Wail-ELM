@@ -4,7 +4,7 @@ exports.up = function(knex) {
       table.string('name').notNullable();
       table.string('email').notNullable().unique();
       table.string('password').notNullable();
-      table.string('role').notNullable(); 
+      table.string('role').notNullable().checkIn(['student', 'teacher']);
       table.timestamps(true, true);
     });
   };

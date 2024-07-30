@@ -1,10 +1,8 @@
 jest.setTimeout(30000);
 
-afterAll(done => {
-    if (global.server && global.server.close) {
-      global.server.close(done);
-    } else {
-      done();
-    }
-  });
-  
+const { server } = require('./src/server');
+const knex = require('./src/config/knex');
+
+afterAll(async () => {
+  server.close();
+});

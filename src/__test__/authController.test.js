@@ -2,8 +2,7 @@ const request = require('supertest');
 const { app, server } = require('../server');
 const knex = require('../config/knex');
 
-describe('Auth Controller', () => {
-  beforeAll(async () => {
+beforeAll(async () => {
     await knex.migrate.latest();
   });
 
@@ -12,6 +11,9 @@ describe('Auth Controller', () => {
     await knex.destroy();
     server.close();
   });
+
+describe('Auth Controller', () => {
+ 
 
   it('should register a user', async () => {
     const res = await request(app)

@@ -2,18 +2,18 @@ const request = require('supertest');
 const { app, server } = require('../server');
 const knex = require('../config/knex');
 
+beforeAll(async () => {
+  await knex.migrate.latest();
+  await knex.seed.run();
+});
+
+afterAll(async () => {
+  await knex.migrate.rollback();
+  await knex.destroy();
+  server.close();
+});
+
 describe('Questions Endpoints', () => {
-  beforeAll(async () => {
-    await knex.migrate.latest();
-    await knex.seed.run();
-  });
-
-  afterAll(async () => {
-    await knex.migrate.rollback();
-    await knex.destroy();
-    server.close();
-  });
-
   it('should create a question', async () => {
     const res = await request(app)
       .post('/api/questions')

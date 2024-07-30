@@ -2,8 +2,7 @@ const request = require('supertest');
 const { app, server } = require('../server');
 const knex = require('../config/knex');
 
-describe('Answers Endpoints', () => {
-  beforeAll(async () => {
+beforeAll(async () => {
     await knex.migrate.latest();
     await knex.seed.run();
   });
@@ -13,6 +12,9 @@ describe('Answers Endpoints', () => {
     await knex.destroy();
     server.close();
   });
+
+describe('Answers Endpoints', () => {
+
 
   it('should create an answer', async () => {
     const res = await request(app)
