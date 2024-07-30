@@ -1,19 +1,26 @@
-version: '3.8'
+version: "3.8"
 services:
   app_test:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:3000"  
+      - "8080:3000"
     environment:
       NODE_ENV: test
+      DB_HOST: forum
+      DB_NAME: ${TEST_DB_NAME}
+      DB_USER: ${TEST_DB_USER}
+      DB_PASSWORD: ${TEST_DB_PASSWORD}
+      DB_HOST_AUTH_METHOD: ${TEST_DB_HOST_AUTH_METHOD}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     depends_on:
       - db_test
+    command: ["sh", "-c", "npx knex migrate:latest --env test && npm test"]
   db_test:
     image: postgres:13
     environment:
-      POSTGRES_DB: ${TEST_DB_NAME}
+      POSTGRES_DB: forum
       POSTGRES_USER: ${TEST_DB_USER}
       POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: ${TEST_DB_HOST_AUTH_METHOD}
