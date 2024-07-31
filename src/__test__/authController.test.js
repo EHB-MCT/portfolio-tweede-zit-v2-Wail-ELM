@@ -1,41 +1,36 @@
-const request = require('supertest');
-const { app, server } = require('../server');
-const knex = require('../config/knex');
+const request = require("supertest");
+const { app, server } = require("../server");
+const knex = require("../config/knex");
 
 beforeAll(async () => {
-    await knex.migrate.latest();
-  });
+  await knex.migrate.rollback();
+  await knex.migrate.latest();
+});
 
-  afterAll(async () => {
-    await knex.migrate.rollback();
-    await knex.destroy();
-    server.close();
-  });
+afterAll(async () => {
+  await knex.migrate.rollback();
+  await knex.destroy();
+  server.close();
+});
 
-describe('Auth Controller', () => {
- 
-
-  it('should register a user', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'password123',
-        role: 'student'
-      });
+describe("Auth Controller", () => {
+  it("should register a user", async () => {
+    const res = await request(app).post("/api/auth/register").send({
+      name: "Test User",
+      email: "test@example.com",
+      password: "password123",
+      role: "student",
+    });
     expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('message', 'User registered successfully');
+    expect(res.body).toHaveProperty("message", "User registered successfully");
   });
 
-  it('should login a user', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'test@example.com',
-        password: 'password123'
-      });
+  it("should login a user", async () => {
+    const res = await request(app).post("/api/auth/login").send({
+      email: "test@example.com",
+      password: "password123",
+    });
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('token');
+    expect(res.body).toHaveProperty("token");
   });
 });
