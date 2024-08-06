@@ -17,7 +17,7 @@ describe("Auth Controller", () => {
   it("should register a user", async () => {
     const res = await request(app).post("/api/auth/register").send({
       name: "Test User",
-      email: "test@example.com",
+      email: "testNewUser@example.com",
       password: "password123",
       role: "student",
     });
@@ -27,7 +27,7 @@ describe("Auth Controller", () => {
 
   it("should login a user", async () => {
     const res = await request(app).post("/api/auth/login").send({
-      email: "test@example.com",
+      email: "testNewUser@example.com",
       password: "password123",
     });
     expect(res.statusCode).toEqual(200);

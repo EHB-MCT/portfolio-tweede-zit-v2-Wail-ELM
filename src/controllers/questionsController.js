@@ -1,15 +1,23 @@
 const knex = require('../config/knex');
 
 const getQuestions = async (req, res) => {
-  const questions = await knex('questions').select('*');
-  res.json(questions);
+  try {
+    const questions = await knex('questions').select('*');
+    res.json(questions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const createQuestion = async (req, res) => {
   const { content, anonymous } = req.body;
   const user_id = anonymous ? null : req.user.id;
-  const [id] = await knex('questions').insert({ content, user_id }).returning('id');
-  res.status(201).json({ message: 'Question created', id });
+  try {
+    const [id] = await knex('questions').insert({ content, user_id }).returning('id');
+    res.status(201).json({ message: 'Question created', id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const deleteQuestion = async (req, res) => {

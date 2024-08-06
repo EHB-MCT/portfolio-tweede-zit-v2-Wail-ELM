@@ -2,16 +2,24 @@ const knex = require('../config/knex');
 
 const getAnswers = async (req, res) => {
   const { questionId } = req.params;
-  const answers = await knex('answers').where({ question_id: questionId }).select('*');
-  res.json(answers);
+  try {
+    const answers = await knex('answers').where({ question_id: questionId }).select('*');
+    res.json(answers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const createAnswer = async (req, res) => {
   const { content } = req.body;
   const { questionId } = req.params;
   const user_id = req.user.id;
-  const [id] = await knex('answers').insert({ content, question_id: questionId, user_id }).returning('id');
-  res.status(201).json({ message: 'Answer created', id });
+  try {
+    const [id] = await knex('answers').insert({ content, question_id: questionId, user_id }).returning('id');
+    res.status(201).json({ message: 'Answer created', id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const markAnswerCorrect = async (req, res) => {
