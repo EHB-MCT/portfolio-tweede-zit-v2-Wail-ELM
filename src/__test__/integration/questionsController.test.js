@@ -1,6 +1,6 @@
 const request = require("supertest");
-const { app, server } = require("../server");
-const knex = require("../config/knex");
+const { app, server } = require("../../server");
+const knex = require("../../config/knex");
 
 let token;
 
@@ -22,22 +22,22 @@ afterAll(async () => {
   server.close();
 });
 
-describe("Comments Endpoints", () => {
-  it("should create a comment", async () => {
+describe("Questions Endpoints", () => {
+  it("should create a question", async () => {
     const res = await request(app)
-      .post("/api/comments/1")
+      .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        content: "This is a comment.",
+        content: "What is Docker?",
         user_id: 1,
       });
     expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty("message", "Comment created");
+    expect(res.body).toHaveProperty("message", "Question created");
   });
 
-  it("should fetch comments for an answer", async () => {
+  it("should fetch all questions", async () => {
     const res = await request(app)
-      .get("/api/comments/1")
+      .get("/api/questions")
       .set("Authorization", `Bearer ${token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveLength(1);

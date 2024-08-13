@@ -5,24 +5,26 @@ exports.seed = async function(knex) {
   await knex('answers').del();
   await knex('questions').del();
   await knex('users').del();
-
-  const hashedPassword1 = await bcrypt.hash('password123', 10);
-  const hashedPassword2 = await bcrypt.hash('password123', 10);
+  
+  await knex.raw('ALTER SEQUENCE comments_id_seq RESTART WITH 1');
+  await knex.raw('ALTER SEQUENCE answers_id_seq RESTART WITH 1');
+  await knex.raw('ALTER SEQUENCE questions_id_seq RESTART WITH 1');
+  await knex.raw('ALTER SEQUENCE users_id_seq RESTART WITH 1');
 
   await knex('users').insert([
-    { name: 'Student Test', email: 'test@example.com', password: hashedPassword1, role: 'student' },
-    { name: 'Teacher Test', email: 'teacher@example.com', password: hashedPassword2, role: 'teacher' }
+    { id: 1, name: 'Student Test', email: 'test@example.com', password: await bcrypt.hash('password123', 10), role: 'student' },
+    { id: 2, name: 'Teacher Test', email: 'teacher@example.com', password: await bcrypt.hash('password123', 10), role: 'teacher' }
   ]);
 
   await knex('questions').insert([
-    { content: 'What is Docker?', user_id: 1 }
+    { id: 1, content: 'What is Docker?', user_id: 1 }
   ]);
 
   await knex('answers').insert([
-    { content: 'Docker is a platform for developing, shipping, and running applications.', question_id: 1, user_id: 1, correct: false }
+    { id: 1, content: 'Docker is a platform for developing, shipping, and running applications.', question_id: 1, user_id: 1, correct: false }
   ]);
 
   await knex('comments').insert([
-    { content: 'This is a comment.', answer_id: 1, user_id: 1 }
+    { id: 1, content: 'This is a comment.', answer_id: 1, user_id: 1 }
   ]);
 };

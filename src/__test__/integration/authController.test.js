@@ -1,10 +1,21 @@
 const request = require("supertest");
-const { app, server } = require("../server");
-const knex = require("../config/knex");
+const { app, server } = require("../../server");
+const knex = require("../../config/knex");
+
+let token;
 
 beforeAll(async () => {
   await knex.migrate.rollback();
   await knex.migrate.latest();
+});
+
+beforeEach(async () => {
+  await knex.seed.run();
+  const res = await request(app).post("/api/auth/login").send({
+    email: "test@example.com",
+    password: "password123",
+  });
+  token = res.body.token;
 });
 
 afterAll(async () => {
@@ -17,7 +28,7 @@ describe("Auth Controller", () => {
   it("should register a user", async () => {
     const res = await request(app).post("/api/auth/register").send({
       name: "Test User",
-      email: "testNewUser@example.com",
+      email: "test@example.com",
       password: "password123",
       role: "student",
     });
@@ -27,7 +38,7 @@ describe("Auth Controller", () => {
 
   it("should login a user", async () => {
     const res = await request(app).post("/api/auth/login").send({
-      email: "testNewUser@example.com",
+      email: "test@example.com",
       password: "password123",
     });
     expect(res.statusCode).toEqual(200);
