@@ -1,15 +1,20 @@
 const { register, login } = require("../../controllers/authController");
-const knex = require("config/knex");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-jest.mock("config/knex");
+jest.mock("config/knex", () => () => ({
+  where: jest.fn().mockReturnThis(),
+  insert: jest.fn(),
+  first: jest.fn(),
+}));
+
 jest.mock("bcryptjs");
 jest.mock("jsonwebtoken");
 
 describe("authController", () => {
   let req;
   let res;
+  let knexMock;
 
   beforeEach(() => {
     req = {
@@ -22,10 +27,12 @@ describe("authController", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
     };
+
+    knexMock = require("config/knex")();
   });
 
   describe("register", () => {
-    it("should register a user successfully", async () => {
+    test("should register a user successfully", async () => {
       req.body = {
         name: "John Doe",
         email: "john@example.com",
@@ -33,14 +40,12 @@ describe("authController", () => {
         role: "user",
       };
       bcrypt.hash.mockResolvedValue("hashedPassword");
-      knex.mockReturnValue({
-        insert: jest.fn().mockResolvedValue([1]),
-      });
+      knexMock.insert.mockResolvedValue([1]);
 
       await register(req, res);
 
       expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
-      expect(knex("users").insert).toHaveBeenCalledWith({
+      expect(knexMock.insert).toHaveBeenCalledWith({
         name: "John Doe",
         email: "john@example.com",
         password: "hashedPassword",
@@ -53,7 +58,7 @@ describe("authController", () => {
       });
     });
 
-    it("should handle errors during user registration", async () => {
+    test("should handle errors during user registration", async () => {
       req.body = {
         name: "John Doe",
         email: "john@example.com",
@@ -62,9 +67,7 @@ describe("authController", () => {
       };
       const errorMessage = "Database error";
       bcrypt.hash.mockResolvedValue("hashedPassword");
-      knex.mockReturnValue({
-        insert: jest.fn().mockRejectedValue(new Error(errorMessage)),
-      });
+      knexMock.insert.mockRejectedValue(new Error(errorMessage));
 
       await register(req, res);
 
@@ -74,26 +77,20 @@ describe("authController", () => {
   });
 
   describe("login", () => {
-    it("should login a user successfully", async () => {
+    test("should login a user successfully", async () => {
       req.body = { email: "john@example.com", password: "password" };
       const user = {
         id: 1,
         email: "john@example.com",
         password: "hashedPassword",
       };
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue(user),
-        }),
-      });
+      knexMock.first.mockResolvedValue(user);
       bcrypt.compare.mockResolvedValue(true);
       jwt.sign.mockReturnValue("token");
 
       await login(req, res);
 
-      expect(knex("users").where).toHaveBeenCalledWith({
-        email: "john@example.com",
-      });
+      expect(knexMock.where).toHaveBeenCalledWith({ email: "john@example.com" });
       expect(bcrypt.compare).toHaveBeenCalledWith("password", "hashedPassword");
       expect(jwt.sign).toHaveBeenCalledWith(
         { id: 1 },
@@ -103,13 +100,9 @@ describe("authController", () => {
       expect(res.json).toHaveBeenCalledWith({ token: "token" });
     });
 
-    it("should return 401 if credentials are invalid", async () => {
+    test("should return 401 if credentials are invalid", async () => {
       req.body = { email: "john@example.com", password: "password" };
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue(null),
-        }),
-      });
+      knexMock.first.mockResolvedValue(null);
 
       await login(req, res);
 
@@ -117,14 +110,10 @@ describe("authController", () => {
       expect(res.json).toHaveBeenCalledWith({ message: "Invalid credentials" });
     });
 
-    it("should handle errors during login", async () => {
+    test("should handle errors during login", async () => {
       req.body = { email: "john@example.com", password: "password" };
       const errorMessage = "Database error";
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockRejectedValue(new Error(errorMessage)),
-        }),
-      });
+      knexMock.first.mockRejectedValue(new Error(errorMessage));
 
       await login(req, res);
 

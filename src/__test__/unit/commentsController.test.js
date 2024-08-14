@@ -3,12 +3,18 @@ const {
   createComment,
   deleteComment,
 } = require("../../controllers/commentsController");
-const knex = require("config/knex");
-jest.mock("config/knex");
+
+jest.mock("config/knex", () => () => ({
+  where: jest.fn().mockReturnThis(),
+  select: jest.fn(),
+  insert: jest.fn(),
+  del: jest.fn(),
+}));
 
 describe("commentsController", () => {
   let req;
   let res;
+  let knexMock;
 
   beforeEach(() => {
     req = {
@@ -21,33 +27,27 @@ describe("commentsController", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
     };
+
+    knexMock = require("config/knex")();
   });
 
   describe("getComments", () => {
-    it("should get comments successfully", async () => {
+    test("should get comments successfully", async () => {
       req.params.answerId = 1;
       const comments = [{ id: 1, content: "Comment 1", answer_id: 1 }];
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          select: jest.fn().mockResolvedValue(comments),
-        }),
-      });
+      knexMock.select.mockResolvedValue(comments);
 
       await getComments(req, res);
 
-      expect(knex("comments").where).toHaveBeenCalledWith({ answer_id: 1 });
-      expect(knex("comments").where().select).toHaveBeenCalled();
+      expect(knexMock.where).toHaveBeenCalledWith({ answer_id: 1 });
+      expect(knexMock.select).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(comments);
     });
 
-    it("should handle errors when getting comments", async () => {
+    test("should handle errors when getting comments", async () => {
       req.params.answerId = 1;
       const errorMessage = "Database error";
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          select: jest.fn().mockRejectedValue(new Error(errorMessage)),
-        }),
-      });
+      knexMock.select.mockRejectedValue(new Error(errorMessage));
 
       await getComments(req, res);
 
@@ -57,17 +57,15 @@ describe("commentsController", () => {
   });
 
   describe("createComment", () => {
-    it("should create a comment successfully", async () => {
+    test("should create a comment successfully", async () => {
       req.body.content = "New Comment";
       req.params.answerId = 1;
       req.user.id = 1;
-      knex.mockReturnValue({
-        insert: jest.fn().mockResolvedValue([1]),
-      });
+      knexMock.insert.mockResolvedValue([1]);
 
       await createComment(req, res);
 
-      expect(knex("comments").insert).toHaveBeenCalledWith({
+      expect(knexMock.insert).toHaveBeenCalledWith({
         content: "New Comment",
         answer_id: 1,
         user_id: 1,
@@ -79,14 +77,12 @@ describe("commentsController", () => {
       });
     });
 
-    it("should handle errors when creating a comment", async () => {
+    test("should handle errors when creating a comment", async () => {
       req.body.content = "New Comment";
       req.params.answerId = 1;
       req.user.id = 1;
       const errorMessage = "Database error";
-      knex.mockReturnValue({
-        insert: jest.fn().mockRejectedValue(new Error(errorMessage)),
-      });
+      knexMock.insert.mockRejectedValue(new Error(errorMessage));
 
       await createComment(req, res);
 
@@ -96,31 +92,23 @@ describe("commentsController", () => {
   });
 
   describe("deleteComment", () => {
-    it("should delete a comment successfully", async () => {
+    test("should delete a comment successfully", async () => {
       req.params.id = 1;
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          del: jest.fn().mockResolvedValue(1),
-        }),
-      });
+      knexMock.del.mockResolvedValue(1);
 
       await deleteComment(req, res);
 
-      expect(knex("comments").where).toHaveBeenCalledWith({ id: 1 });
-      expect(knex("comments").where().del).toHaveBeenCalled();
+      expect(knexMock.where).toHaveBeenCalledWith({ id: 1 });
+      expect(knexMock.del).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith({
         message: "Comment deleted successfully",
       });
     });
 
-    it("should handle errors when deleting a comment", async () => {
+    test("should handle errors when deleting a comment", async () => {
       req.params.id = 1;
       const errorMessage = "Database error";
-      knex.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          del: jest.fn().mockRejectedValue(new Error(errorMessage)),
-        }),
-      });
+      knexMock.del.mockRejectedValue(new Error(errorMessage));
 
       await deleteComment(req, res);
 
