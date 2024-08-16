@@ -1,6 +1,6 @@
 const request = require("supertest");
-const { app, server } = require("../server");
-const knex = require("../config/knex");
+const { app, server } = require("../../server");
+const knex = require("../../config/knex");
 
 let token;
 
