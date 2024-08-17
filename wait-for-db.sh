@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # wait-for-db.sh
 
 set -e

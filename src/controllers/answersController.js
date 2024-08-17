@@ -16,6 +16,11 @@ const createAnswer = async (req, res) => {
   const { content } = req.body;
   const { questionId } = req.params;
   const user_id = req.user.id;
+
+  if (!content) {
+    return res.status(400).json({ error: "Content is required" });
+  }
+
   try {
     const [id] = await knex("answers")
       .insert({ content, question_id: questionId, user_id })

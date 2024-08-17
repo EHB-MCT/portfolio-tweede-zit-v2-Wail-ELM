@@ -4,6 +4,13 @@ const knex = require("../config/knex");
 
 const register = async (req, res) => {
   const { name, email, password, role } = req.body;
+  console.log('Request Body:', req.body); 
+
+  if (!email) {
+    return res.status(500).json({ error: "Email is required" });
+  }
+
+
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const [id] = await knex("users")

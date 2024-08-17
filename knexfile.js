@@ -35,7 +35,8 @@ module.exports = {
   test: {
     client: "pg",
     connection: {
-      host: process.env.TEST_DB_HOST,  
+      host: 'db_test',
+      DB_HOST: 'db_test',   
       port: process.env.TEST_DB_PORT || 5432,  
       database: process.env.TEST_DB_NAME,
       user: process.env.TEST_DB_USER,
@@ -47,5 +48,10 @@ module.exports = {
     seeds: {
       directory: "./src/seeds",
     },
+    pool: {
+      min: 2,
+      max: 10,
+      acquireConnectionTimeout: 10000
+    }
   },
 };

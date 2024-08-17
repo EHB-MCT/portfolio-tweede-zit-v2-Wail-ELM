@@ -16,7 +16,7 @@ services:
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     depends_on:
       - db_test
-    command: ["sh", "-c", "npx knex migrate:unlock --env test && npx knex migrate:latest --env test && npx knex seed:run --env test && npm test"]
+    command: ["bash", "/usr/src/app/wait-for-db.sh", "db_test", "npx knex migrate:unlock --env test && npx knex migrate:latest --env test && npx knex seed:run --env test && npm test"]
   db_test:
     image: postgres:13
     environment:
