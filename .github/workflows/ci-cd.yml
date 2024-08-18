@@ -13,42 +13,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run tests
-      env:
-        NODE_ENV: test
-        TEST_DB_HOST: db_test
-        TEST_DB_NAME: forum
-        TEST_DB_USER: postgres
-        TEST_DB_PASSWORD: play-play
-        ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-      run: npm test
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/portfolio-tweede-zit-v2-wail-elm-app_dev .
 
-    - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/portfolio-tweede-zit-v2-wail-elm-app_dev .
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Run tests
+        env:
+          NODE_ENV: test
+          TEST_DB_HOST: db_test
+          TEST_DB_NAME: forum
+          TEST_DB_USER: postgres
+          TEST_DB_PASSWORD: play-play
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+        run: npm test
 
-    - name: Push Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/portfolio-tweede-zit-v2-wail-elm-app_dev
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/portfolio-tweede-zit-v2-wail-elm-app_dev
 
-    - name: Log out from Docker Hub
-      run: docker logout
+      - name: Log out from Docker Hub
+        run: docker logout
 
-    - name: Lighthouse CI
-      run: |
-        npm install -g @lhci/cli@0.7.x
-        lhci autorun
-      env:
-        LHCI_GITHUB_APP_TOKEN: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      - name: Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.7.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.ACCESS_TOKEN_SECRET }}
