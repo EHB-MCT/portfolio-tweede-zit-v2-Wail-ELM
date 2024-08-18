@@ -1,18 +1,4 @@
-Certainly! Here's the entire content formatted into one markdown document:
-
-```markdown
 # Portfolio Tweede Zit V2 - Wail ELM
-
-## Table of Contents
-1. [Project Description](#project-description)
-2. [Project Structure](#project-structure)
-3. [Technologies Used](#technologies-used)
-4. [Installation](#installation)
-5. [Usage](#usage)
-6. [Testing](#testing)
-7. [Deployment](#deployment)
-8. [References](#references)
-9. [Contributors](#contributors)
 
 ## Project Description
 
@@ -60,7 +46,6 @@ Ensure you have the following tools installed on your machine:
    ```
 
 3. **Set up environment variables**
-   - Rename `.env.example` to `.env`.
    - Configure environment variables for development and testing in `.env`.
 
 4. **Start Docker containers**
@@ -200,15 +185,9 @@ This project was developed as part of the **DEV5** course at [Erasmus Hogeschool
 - [Docker Documentation](https://docs.docker.com/)
 - [Jest Documentation](https://jestjs.io/)
 - [Lighthouse CI Documentation](https://github.com/GoogleChrome/lighthouse-ci)
-
-### Credit
-This README and project configuration were created with the assistance of [ChatGPT](https://openai.com/chatgpt) by OpenAI.
+- [ChatGPT](https://openai.com/chatgpt)
 
 ## Contributors
 
-- **Wail ELM** - [GitHub](https://github.com/your-username)
-- **DEV5 Instructors** - [Erasmus Hogeschool Brussel (EhB)](https://www.erasmushogeschool.be/)
-
----
-```
+- **Wail ELM** - [GitHub](https://github.com/Wail-ELM)
 
